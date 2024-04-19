@@ -6,7 +6,6 @@ import RegisterPage from "../pages/RegisterPage";
 import { getUserLogged, putAccessToken } from "../utils/network-data";
 import { LocaleProvider } from "../context/LocaleContext";
 import Login from "../pages/Login";
-import NoteList from "./NoteList";
 import Archive from "../pages/Archive";
 import NewNote from "../pages/NewNote";
 import NoteDetailWrapper from "../pages/NoteDetail";
@@ -15,43 +14,19 @@ import { Link } from "react-router-dom";
 function NoteApp(){
     const [authedUser, setAuthedUser] = useState(null);
     const [initializing, setInitializing] = useState(true);
-    const [localeContext, setLocaleContext] = useState({
-        locale: localStorage.getItem('locale') || 'id',
-        toggleLocale: () => {
-            setLocaleContext((prevState) => {
-                const newLocale = prevState.locale === 'id' ? 'en' : 'id';
-                localStorage.setItem('locale', newLocale);
-                return {
-                    ...prevState,
-                    locale: newLocale
-                };
-            });
-        }
-    });
-
-    // React.useEffect(() => {
-    //     async function fetchData() {
-    //     try {
-    //         const { data } = await getUserLogged();
-    //         setAuthedUser(data);
-    //         setInitializing(false);
-    //     } catch (error) {
-    //         console.error('Error fetching user data:', error);
-    //     }
-    //     }
-    //     fetchData();
-    // }, []);
+    const [localeContext] = useState();
+    const [theme, setTheme] = useState(localStorage.getItem('theme')||'light');
 
     useEffect(() => {
         const fetchData = async () => {
-            try {
-                const { data } = await getUserLogged();
-                setAuthedUser(data);
-                setInitializing(false);
-            } catch (error) {
-                console.error("Error fetching user data:", error);
-                setInitializing(false);
-            }
+                try {
+                    const { data } = await getUserLogged();
+                    setAuthedUser(data);
+                    setInitializing(false);
+                } catch (error) {
+                    console.error("Error fetching user data:", error);
+                    setInitializing(false);
+                }
             };
         
             if (authedUser === null) {
@@ -62,7 +37,6 @@ function NoteApp(){
     const onLoginSuccess = async ({ accessToken }) => {
         try {
             console.log('access', accessToken)
-            putAccessToken(accessToken);
             const { data } = await getUserLogged();
             setAuthedUser(data);
         } catch (error) {
@@ -70,22 +44,20 @@ function NoteApp(){
         }
     };
 
-    // async function onLoginSuccess({accessToken}){
-    //     putAccessToken(accessToken);
-    //     const { data } = await getUserLogged();
-    //     setAuthedUser(data);
-    // }
-
     const onLogout = () => {
         setAuthedUser(null);
         putAccessToken('');
     };
 
-    const toggleLocale = () => {
-        const newLocale = locale === 'id' ? 'en' : 'id';
-        localStorage.setItem('locale', newLocale);
-        setLocale(newLocale);
+    const toggleTheme = () => {
+        const newTheme = theme === 'light' ? 'dark' : 'light';
+        localStorage.setItem('theme', newTheme);
+        setTheme(newTheme);
     };
+
+    useEffect(() => {
+        document.documentElement.setAttribute('data-theme', theme);
+    }, [theme]);
 
     if(initializing){
         return null;
@@ -113,11 +85,11 @@ function NoteApp(){
 
     return(
         <>
-            <LocaleProvider value={localeContext}>
+            <LocaleProvider value={{localeContext, theme, toggleTheme}}>
                 <div className="app-container">
                     <header>
-                        <h1><Link to="/notes">Aplikasi Catatan</Link></h1>
-                        <Navigation logout={onLogout} name={authedUser.name}/>
+                        <h1><Link to="/">Aplikasi Catatan</Link></h1>
+                        <Navigation logout={onLogout} themeToggle={toggleTheme} name={authedUser.name}/>
                     </header>
                     <main>
                         <Routes>

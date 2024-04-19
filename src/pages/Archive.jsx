@@ -1,5 +1,4 @@
 import React from "react";
-import { showFormattedDate } from "../utils/index";
 import { getArchivedNotes, deleteNote } from "../utils/network-data";
 import ArchiveList from "../components/ArchiveList";
 
@@ -7,7 +6,7 @@ class Archive extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            notes: getArchivedNotes(),
+            notes:{},
             id:''
         }
         this.onDeleteHandler = this.onDeleteHandler.bind(this);
@@ -23,13 +22,23 @@ class Archive extends React.Component {
         });
     }
 
+    async componentDidMount() {
+        try {
+            const notes = await getArchivedNotes();
+            this.setState({ notes});
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     render() {
+        console.log(Object.values(this.state.notes))
         return (
             <>
                 <div className="notes-app">
                     <section className="notes-app-body">
                         <ArchiveList
-                            notes={this.state.notes}
+                            notes={Object.values(this.state.notes)}
                             onDelete={this.onDeleteHandler}
                         />
                     </section>

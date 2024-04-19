@@ -2,7 +2,6 @@ import React from "react";
 import useInput from "../customHooks/CustomHooks";
 import { login } from "../utils/network-data";
 import PropTypes from "prop-types"
-import { Link } from "react-router-dom";
 import { putAccessToken } from "../utils/network-data";
 
 function LoginInput({loginSuccess}){
@@ -10,10 +9,8 @@ function LoginInput({loginSuccess}){
     const [password, handlePasswordChange] = useInput('');
     const handleSubmit = async (event) => {
         event.preventDefault();
-        // await login({email, password});
         try {
             const { error, data } = await login({ email, password });
-            // console.log("data access",data.accessToken)
             putAccessToken(data.accessToken);
             if (!error) {
                 loginSuccess(data?.accessToken);
@@ -35,7 +32,7 @@ function LoginInput({loginSuccess}){
 }
 
 LoginInput.propTypes = {
-    login: PropTypes.func.isRequired,
+    loginSuccess: PropTypes.func.isRequired,
 }
 
 export default LoginInput;

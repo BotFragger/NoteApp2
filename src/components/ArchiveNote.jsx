@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import NoteBody from "./NoteBody";
-import { deleteNote, unarchiveNote } from "../utils/local-data";
+import { deleteNote, unarchiveNote } from "../utils/network-data";
 import { useNavigate } from "react-router-dom";
 
 function ArchiveNote({title, body, id, createdAt, onDelete}){

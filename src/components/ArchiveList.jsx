@@ -3,25 +3,29 @@ import ArchiveNote from "./ArchiveNote";
 import PropTypes from "prop-types";
 
 function ArchiveList({notes, onDelete, id}){
-    if (!notes.length){
-        return  <p>Tidak ada catatan</p>;
+    const archivedNotes = notes[1] || [];
+
+    if (archivedNotes.length === 0) {
+        return <p>Currently no notes available</p>;
     }
-    return(
+
+    return (
         <div className="notes-list">
-            {notes.map((note) =>(
-                <ArchiveNote 
+            {archivedNotes.map((note) => (
+                <ArchiveNote
                     key={note.id}
                     id={id}
-                    onDelete={()=> onDelete(note.id)}
-                    {...note}/>
+                    onDelete={() => onDelete(note.id)}
+                    {...note}
+                />
             ))}
         </div>
-    )
+    );
 }
 
 ArchiveList.propTypes = {
     onDelete: PropTypes.func.isRequired,
-    notes: PropTypes.arrayOf(PropTypes.object),
+    notes: PropTypes.array,
     id: PropTypes.string,
 }
 
